@@ -1,0 +1,99 @@
+version: '3.8'
+
+secrets:
+  openweather_api_key:
+    file: ../../secrets/openweather_api_key.txt
+
+services:
+  mcp-weather:
+    build:
+      context: .
+      dockerfile: ./servers/weather/Dockerfile
+    networks:
+      - mcp-net
+    environment:
+      - NODE_ENV=production
+    secrets:
+      - openweather_api_key
+    volumes:
+      - ../../mcp-data/weather:/app/data
+      - ../../mcp-logs/weather:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service,mcp-weather"
+
+  mcp-filesystem:
+    build:
+      context: .
+      dockerfile: ./servers/filesystem/Dockerfile
+    networks:
+      - mcp-net
+    volumes:
+      - ../../:/app/workspace:ro
+      - ../../mcp-data/filesystem:/app/data
+      - ../../mcp-logs/filesystem:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - WORKSPACE_PATH=/app/workspace
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service,mcp-filesystem"
+
+  mcp-git:
+    build:
+      context: .
+      dockerfile: .kilocode/docker/servers/git/Dockerfile
+    networks:
+      - mcp-net
+    volumes:
+      - ../../:/app/workspace:ro
+      - ../../mcp-data/git:/app/data
+      - ../../mcp-logs/git:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - WORKSPACE_PATH=/app/workspace
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "service,mcp-git"
+
+networks:
+  mcp-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  mcp-logs:
+    driver: local
+  mcp-data:
+    driver: local
+  mcp-aggregated-logs:
+    driver: local

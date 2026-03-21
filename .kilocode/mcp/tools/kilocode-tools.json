@@ -1,0 +1,197 @@
+{
+  "name": "kilocode-tools",
+  "version": "1.0.0",
+  "displayName": "Kilo Code Tools",
+  "description": "Tools for executing Kilo Code modes and managing development workflows",
+  "tools": [
+    {
+      "name": "execute_mode",
+      "displayName": "Execute Mode",
+      "description": "Execute a specific Kilo Code mode with Cline integration",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "Mode to execute (php-dev, dashboard-ui, database-admin)",
+            "enum": ["php-dev", "dashboard-ui", "database-admin"]
+          },
+          "context": {
+            "type": "object",
+            "description": "Execution context with project-specific data"
+          }
+        },
+        "required": ["mode"]
+      }
+    },
+    {
+      "name": "get_modes",
+      "displayName": "Get Available Modes",
+      "description": "Get list of available Kilo Code modes",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "get_mode_info",
+      "displayName": "Get Mode Information",
+      "description": "Get detailed information about a specific mode",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "Mode to get information for",
+            "enum": ["php-dev", "dashboard-ui", "database-admin"]
+          }
+        },
+        "required": ["mode"]
+      }
+    },
+    {
+      "name": "get_project_info",
+      "displayName": "Get Project Information",
+      "description": "Get information about the current project",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "get_available_tools",
+      "displayName": "Get Available Tools",
+      "description": "Get list of available tools for a specific mode",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "Mode to get tools for",
+            "enum": ["php-dev", "dashboard-ui", "database-admin"]
+          }
+        }
+      }
+    },
+    {
+      "name": "validate_configuration",
+      "displayName": "Validate Configuration",
+      "description": "Validate the current configuration for a mode",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "Mode to validate configuration for",
+            "enum": ["php-dev", "dashboard-ui", "database-admin"]
+          }
+        },
+        "required": ["mode"]
+      }
+    },
+    {
+      "name": "run_code_quality_check",
+      "displayName": "Run Code Quality Check",
+      "description": "Run code quality analysis for the project",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "Mode to run code quality check for",
+            "enum": ["php-dev", "dashboard-ui", "database-admin"]
+          },
+          "threshold": {
+            "type": "number",
+            "description": "Quality threshold (0-100)",
+            "minimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": ["mode"]
+      }
+    },
+    {
+      "name": "run_security_scan",
+      "displayName": "Run Security Scan",
+      "description": "Run security vulnerability scan for the project",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "Mode to run security scan for",
+            "enum": ["php-dev", "dashboard-ui", "database-admin"]
+          }
+        },
+        "required": ["mode"]
+      }
+    },
+    {
+      "name": "run_performance_analysis",
+      "displayName": "Run Performance Analysis",
+      "description": "Run performance analysis for the project",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "description": "Mode to run performance analysis for",
+            "enum": ["php-dev", "dashboard-ui", "database-admin"]
+          },
+          "max_execution_time": {
+            "type": "number",
+            "description": "Maximum acceptable execution time in seconds",
+            "minimum": 0
+          }
+        },
+        "required": ["mode"]
+      }
+    },
+    {
+      "name": "get_execution_history",
+      "displayName": "Get Execution History",
+      "description": "Get history of mode executions",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "number",
+            "description": "Number of recent executions to return",
+            "minimum": 1,
+            "maximum": 100
+          }
+        }
+      }
+    },
+    {
+      "name": "clear_execution_history",
+      "displayName": "Clear Execution History",
+      "description": "Clear the execution history",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "project-info",
+      "type": "json",
+      "description": "Project information and configuration",
+      "path": "resources/project-info.json"
+    },
+    {
+      "name": "mode-templates",
+      "type": "directory",
+      "description": "Mode templates for different development workflows",
+      "path": "templates/"
+    },
+    {
+      "name": "mode-configurations",
+      "type": "directory",
+      "description": "Mode-specific configuration files",
+      "path": "configurations/"
+    }
+  ]
+}

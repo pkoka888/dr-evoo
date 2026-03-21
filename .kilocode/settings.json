@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "ai": {
+    "defaultModel": "moonshot-v1-128k",
+    "parallelMode": {
+      "enabled": true,
+      "maxAgents": 4,
+      "strategy": "context-coordinator"
+    },
+    "mcp": {
+      "memory": {
+        "enabled": true,
+        "type": "server",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-memory"]
+      }
+    }
+  },
+  "project": {
+    "name": "dash.okamih.cz",
+    "type": "php-dashboard",
+    "phpVersion": "8.3"
+  },
+  "modes": {
+    "php-dev": {
+      "enabled": true,
+      "description": "PHP development mode with code quality tools",
+      "standards": "PSR-12",
+      "tools": ["phpstan", "phpcs", "phpunit"],
+      "filePatterns": ["*.php", "*.js", "*.css"]
+    },
+    "dashboard-ui": {
+      "enabled": true,
+      "description": "Dashboard UI development mode",
+      "framework": "vanilla-js",
+      "tools": ["eslint", "stylelint"],
+      "filePatterns": ["*.js", "*.css", "*.html"]
+    },
+    "database-admin": {
+      "enabled": true,
+      "description": "Database administration and migration mode",
+      "tools": ["mysql", "redis"],
+      "filePatterns": ["*.sql", "*.php"]
+    }
+  },
+  "integration": {
+    "cline": {
+      "enabled": true,
+      "configPath": ".clinerules/config/production.json",
+      "orchestrator_path": ".clinerules/integration/FrameworkOrchestrator.php"
+    }
+  },
+  "quality": {
+    "phpstan": {
+      "level": 7,
+      "configPath": "phpstan.neon"
+    },
+    "phpcs": {
+      "standard": "PSR12"
+    }
+  },
+  "logging": {
+    "enabled": true,
+    "level": "info",
+    "path": ".kilocode/logs/framework.log"
+  }
+}

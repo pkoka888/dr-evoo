@@ -1,0 +1,18 @@
+name: ADR Review Notification
+
+on:
+  pull_request:
+    paths:
+      - 'adr/**/*.md'
+    types: [opened, synchronize, reopened]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Architecture Review Board
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            @drdarky/architecture-review-board Please review the updated ADRs in this PR.

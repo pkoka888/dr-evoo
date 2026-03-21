@@ -1,0 +1,151 @@
+{
+  "name": "kilo-code-mcp-server",
+  "version": "1.0.0",
+  "displayName": "Kilo Code MCP Server",
+  "description": "Model Context Protocol server for Kilo Code framework integration",
+  "main": "mcp-server.php",
+  "tools": [
+    {
+      "name": "execute_mode",
+      "path": "tools/kilocode-tools.json",
+      "enabled": true
+    },
+    {
+      "name": "get_modes",
+      "path": "tools/kilocode-tools.json",
+      "enabled": true
+    },
+    {
+      "name": "get_mode_info",
+      "path": "tools/kilocode-tools.json",
+      "enabled": true
+    },
+    {
+      "name": "get_project_info",
+      "path": "tools/kilocode-tools.json",
+      "enabled": true
+    },
+    {
+      "name": "get_available_tools",
+      "path": "tools/kilocode-tools.json",
+      "enabled": true
+    },
+    {
+      "name": "validate_configuration",
+      "path": "tools/kilocode-tools.json",
+      "enabled": true
+    },
+    {
+      "name": "run_code_quality_check",
+      "path": "tools/kilocode-tools.json",
+      "enabled": true
+    },
+    {
+      "name": "run_security_scan",
+      "path": "tools/kilocode-tools.json",
+      "enabled": true
+    },
+    {
+      "name": "run_performance_analysis",
+      "path": "tools/kilocode-tools.json",
+      "enabled": true
+    },
+    {
+      "name": "get_execution_history",
+      "path": "tools/kilocode-tools.json",
+      "enabled": true
+    },
+    {
+      "name": "clear_execution_history",
+      "path": "tools/kilocode-tools.json",
+      "enabled": true
+    }
+  ],
+  "resources": [
+    {
+      "name": "project-info",
+      "path": "resources/project-info.json",
+      "enabled": true
+    },
+    {
+      "name": "mode-templates",
+      "path": "templates/",
+      "enabled": true
+    },
+    {
+      "name": "mode-configurations",
+      "path": "configurations/",
+      "enabled": true
+    }
+  ],
+  "configuration": {
+    "server": {
+      "host": "localhost",
+      "port": 3002,
+      "protocol": "stdio",
+      "log_level": "info",
+      "max_connections": 10,
+      "timeout": 30
+    },
+    "settings": {
+      "logLevel": "info",
+      "logFile": ".kilocode/logs/mcp-server.log"
+    },
+    "security": {
+      "enabled": true,
+      "authentication": "token",
+      "authorization": "role-based",
+      "encryption": "tls",
+      "token_secret": "${MCP_TOKEN_SECRET}",
+      "allowed_roles": ["admin", "developer", "read-only"],
+      "tls_cert_path": ".kilocode/ssl/server.crt",
+      "tls_key_path": ".kilocode/ssl/server.key"
+    },
+    "performance": {
+      "max_execution_time": 30,
+      "memory_limit": "256M",
+      "concurrent_requests": 5
+    },
+    "integration": {
+      "cline": {
+        "enabled": true,
+        "config_path": ".clinerules/config/production.json",
+        "orchestrator_path": ".clinerules/integration/FrameworkOrchestrator.php"
+      },
+      "logging": {
+        "enabled": true,
+        "path": ".kilocode/logs/",
+        "rotation": "daily",
+        "retention": "30_days"
+      }
+    }
+  },
+  "dependencies": {
+    "php": ">=8.3",
+    "extensions": ["json", "mbstring", "curl"],
+    "libraries": []
+  },
+  "documentation": {
+    "readme": "README.md",
+    "api_docs": "docs/",
+    "examples": null,
+    "tutorials": null
+  },
+  "testing": {
+    "enabled": true,
+    "framework": "phpunit",
+    "coverage": true,
+    "threshold": 80
+  },
+  "deployment": {
+    "docker": {
+      "enabled": false,
+      "file": null,
+      "port": 3001
+    },
+    "kubernetes": {
+      "enabled": false,
+      "file": null
+    }
+  }
+}

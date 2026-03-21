@@ -1,0 +1,57 @@
+name: Docker Build & Publish
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Install Node (for orchestration scripts)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Generate production compose
+        run: |
+          npm run docs:index || true
+          node scripts/generate-prod-compose.js
+
+      - name: Build & push images
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+        run: |
+          SERVICES="saleor-api postgres redis minio n8n"
+          for svc in $SERVICES; do
+            echo "Building $svc"
+            docker build \
+              --secret id=postgres_password,src=<(echo "$POSTGRES_PASSWORD") \
+              -t ${{ secrets.DOCKER_REGISTRY }}/$svc:${{ github.sha }} \
+              -f $svc/Dockerfile . || true
+            docker push ${{ secrets.DOCKER_REGISTRY }}/$svc:${{ github.sha }}
+          done
+
+      - name: Validate compose
+        run: |
+          node scripts/validate-compose.js
+
+      - name: Deploy stack (manual approval required)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker stack deploy -c docker-compose.yml dr-evo

@@ -1,0 +1,46 @@
+name: Study Documentation Checks
+on:
+  schedule:
+    - cron: '0 2 * * *' # daily at 02:00 UTC
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: Install dependencies (no‑install needed for script)
+        run: echo 'No dependencies required'
+      - name: Run overdue‑study script
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const STUDIES_ROOT = path.join('plans','studies');
+          const THRESHOLDS = { waiting: 21, reviewed: 14 }; // days
+          const today = Date.now();
+          function age(dateStr){ return Math.floor((today - new Date(dateStr))/86400000); }
+          function walk(dir){
+            const entries = fs.readdirSync(dir, { withFileTypes: true });
+            for(const e of entries){
+              const p = path.join(dir, e.name);
+              if(e.isDirectory()) { if(e.name!=='index') walk(p); }
+              else if(p.endsWith('.md')){
+                const content = fs.readFileSync(p,'utf8');
+                const m = content.match(/^---\n([\s\S]*?)\n---/);
+                if(!m) continue;
+                const data = Object.fromEntries(m[1].split('\n').filter(l=>l.includes(':')).map(l=>{ const [k,...v]=l.split(':'); return [k.trim(), v.join(':').trim().replace(/['\"]+/g,'')]; }));
+                if(data.status && THRESHOLDS[data.status]){
+                  const d = age(data.last_modified||data.created);
+                  if(d>THRESHOLDS[data.status]){
+                    console.warn(`⚠️ ${p} – ${data.status} for ${d} days (threshold ${THRESHOLDS[data.status]})`);
+                    process.exitCode = 1;
+                  }
+                }
+              }
+            }
+          }
+          walk(STUDIES_ROOT);
+          NODE

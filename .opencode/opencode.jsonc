@@ -1,0 +1,24 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "opencode": {
+      "options": {},
+    },
+  },
+  "mcp": {},
+  "tools": {
+    "github-triage": false,
+    "github-pr-search": false,
+  },
+  "extraKnownMarketplaces": {
+    "everything-claude-code": {
+      "source": {
+        "source": "github",
+        "repo": "affaan-m/everything-claude-code",
+      },
+    },
+  },
+  "enabledPlugins": {
+    "everything-claude-code@everything-claude-code": true,
+  },
+}

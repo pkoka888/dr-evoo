@@ -1,0 +1,59 @@
+{
+  "mode": "audit",
+  "description": "Comprehensive deep audit with claim vs reality validation",
+  "parallelCapable": true,
+  "operations": [
+    "claim_vs_reality_validation",
+    "implementation_audit",
+    "documentation_validation",
+    "code_quality_audit",
+    "security_compliance_check",
+    "performance_validation",
+    "cleanup_procedures"
+  ],
+  "resources": {
+    "cpu": 0.8,
+    "memory": "1GB"
+  },
+  "dependencies": [
+    "@kilo-code/audit-framework",
+    "@kilo-code/validation-engine",
+    "@kilo-code/cleanup-tools"
+  ],
+  "validation": {
+    "claim_vs_reality": {
+      "enabled": true,
+      "sources": ["README.md", "docs/", "comments", "tests"],
+      "validation_types": ["functionality", "api_contracts", "performance_claims", "security_assertions"]
+    },
+    "implementation_audit": {
+      "enabled": true,
+      "check_types": ["dead_code", "unused_imports", "circular_dependencies", "code_duplication"]
+    },
+    "documentation_validation": {
+      "enabled": true,
+      "validate_against": ["code", "tests", "api_specs"]
+    }
+  },
+  "cleanup": {
+    "procedures": [
+      "remove_dead_code",
+      "optimize_imports",
+      "fix_circular_deps",
+      "standardize_formatting",
+      "update_dependencies"
+    ],
+    "safety_checks": ["backup_before_cleanup", "test_after_cleanup", "rollback_on_failure"]
+  },
+  "reporting": {
+    "format": "comprehensive",
+    "include": ["validation_results", "audit_findings", "cleanup_actions", "recommendations"],
+    "output": "../reports/audit"
+  },
+  "ai": {
+    "model": "claude-3-opus",
+    "context": "audit",
+    "validation_assistance": true,
+    "recommendation_generation": true
+  }
+}

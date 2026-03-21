@@ -1,0 +1,155 @@
+{
+  "mode": "memory",
+  "description": "Memory operations using Graphiti temporal knowledge graph for persistent agent context",
+  "parallelCapable": true,
+  "operations": [
+    "store_context",
+    "retrieve_context",
+    "entity_search",
+    "fact_search",
+    "manage_episodes",
+    "clear_memory"
+  ],
+  "resources": {
+    "cpu": 0.5,
+    "memory": "512MB"
+  },
+  "dependencies": [
+    "graphiti"
+  ],
+  "mcpServer": "graphiti",
+  "tools": {
+    "store_context": {
+      "description": "Store new information in the knowledge graph",
+      "parameters": {
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "Name of the episode"
+        },
+        "content": {
+          "type": "string",
+          "required": true,
+          "description": "Content to store"
+        },
+        "group_id": {
+          "type": "string",
+          "required": false,
+          "description": "Group identifier for organizing memories"
+        },
+        "source": {
+          "type": "string",
+          "required": false,
+          "enum": ["text", "json", "message"],
+          "default": "text",
+          "description": "Type of content"
+        }
+      },
+      "mcpTool": "add_memory"
+    },
+    "retrieve_context": {
+      "description": "Retrieve relevant context from memory using semantic search",
+      "parameters": {
+        "query": {
+          "type": "string",
+          "required": true,
+          "description": "Search query"
+        },
+        "group_ids": {
+          "type": "array",
+          "required": false,
+          "description": "Filter by group IDs"
+        },
+        "max_nodes": {
+          "type": "number",
+          "required": false,
+          "default": 10,
+          "description": "Maximum number of results"
+        }
+      },
+      "mcpTool": "search_nodes"
+    },
+    "entity_search": {
+      "description": "Search for specific entities in the knowledge graph",
+      "parameters": {
+        "query": {
+          "type": "string",
+          "required": true,
+          "description": "Entity search query"
+        },
+        "entity_types": {
+          "type": "array",
+          "required": false,
+          "description": "Filter by entity types"
+        }
+      },
+      "mcpTool": "search_nodes"
+    },
+    "fact_search": {
+      "description": "Search for facts/relationships between entities",
+      "parameters": {
+        "query": {
+          "type": "string",
+          "required": true,
+          "description": "Fact search query"
+        },
+        "max_facts": {
+          "type": "number",
+          "required": false,
+          "default": 10,
+          "description": "Maximum number of facts to return"
+        }
+      },
+      "mcpTool": "search_memory_facts"
+    },
+    "manage_episodes": {
+      "description": "Get, delete, or manage episodes in memory",
+      "parameters": {
+        "operation": {
+          "type": "string",
+          "required": true,
+          "enum": ["get", "delete"],
+          "description": "Operation to perform"
+        },
+        "uuid": {
+          "type": "string",
+          "required": true,
+          "description": "Episode UUID"
+        }
+      },
+      "mcpTool": "get_episodes,delete_episode"
+    },
+    "clear_memory": {
+      "description": "Clear all data from memory for specified groups",
+      "parameters": {
+        "group_ids": {
+          "type": "array",
+          "required": false,
+          "description": "Group IDs to clear. If empty, clears default group."
+        }
+      },
+      "mcpTool": "clear_graph"
+    }
+  },
+  "configuration": {
+    "defaultGroupId": "default",
+    "maxResults": 10,
+    "autoProcessing": true,
+    "semaphoreLimit": 10
+  },
+  "validation": {
+    "requiredBeforeStore": ["name", "content"],
+    "requiredBeforeSearch": ["query"]
+  },
+  "reporting": {
+    "format": "detailed",
+    "include": ["search_results", "stored_episodes", "memory_stats"],
+    "output": "../reports/memory"
+  },
+  "ai": {
+    "model": "claude-3-opus",
+    "context": "memory_operations",
+    "semanticSearch": true,
+    "autoStore": false
+  }
+}

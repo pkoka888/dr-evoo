@@ -1,0 +1,72 @@
+name: ADR Lint & SLA Check
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # daily at midnight UTC
+  push:
+    paths:
+      - 'adr/**/*.md'
+  pull_request:
+    paths:
+      - 'adr/**/*.md'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate ADR index
+        run: node scripts/generate-adr-index.js
+
+      - name: Check for stale drafts (>7 days)
+        run: |
+          node - <<'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          const ADR_DIR = path.join(__dirname, 'adr');
+          const now = Date.now();
+          const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+          let stale = false;
+          function walk(dir) {
+            for (const entry of fs.readdirSync(dir)) {
+              const full = path.join(dir, entry);
+              const stat = fs.statSync(full);
+              if (stat.isDirectory()) walk(full);
+              else if (full.endsWith('.md')) {
+                const content = fs.readFileSync(full, 'utf8');
+                const match = content.match(/^---\n([\s\S]*?)\n---/m);
+                if (match) {
+                  const yaml = match[1];
+                  const lines = yaml.split('\n');
+                  const data = {};
+                  for (const line of lines) {
+                    const [k, ...v] = line.split(':');
+                    if (k && v.length) data[k.trim()] = v.join(':').replace(/[\'\"]/g, '').trim();
+                  }
+                  if (data.status && data.status.toLowerCase() === 'draft' && data.created) {
+                    const created = new Date(data.created);
+                    if (now - created.getTime() > SEVEN_DAYS) {
+                      console.error(`Stale draft ADR: ${full} (created ${data.created})`);
+                      stale = true;
+                    }
+                  }
+                }
+              }
+            }
+          }
+          walk(ADR_DIR);
+          if (stale) process.exit(1);
+          console.log('No stale draft ADRs found.');
+          EOF

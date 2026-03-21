@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard UI Template</title>
+    <style>
+        /* CSS Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Typography */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Performance Optimizations */
+        .lazy-load {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .lazy-load.loaded {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>Dashboard</h1>
+            <p class="sr-only">Main dashboard for application monitoring and management</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="main-content">
+            <!-- Card 1: Overview -->
+            <div class="card">
+                <h3>System Overview</h3>
+                <p>Welcome to the dashboard. This interface provides real-time monitoring and management capabilities for your application.</p>
+                <ul>
+                    <li>Real-time data updates</li>
+                    <li>Responsive design</li>
+                    <li>Cross-browser compatible</li>
+                    <li>Accessibility compliant</li>
+                </ul>
+            </div>
+
+            <!-- Card 2: Performance Metrics -->
+            <div class="card">
+                <h3>Performance Metrics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="cpuUsage">0%</div>
+                        <div class="stat-label">CPU Usage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="memoryUsage">0MB</div>
+                        <div class="stat-label">Memory Usage</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="responseTime">0ms</div>
+                        <div class="stat-label">Response Time</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="uptime">0h</div>
+                        <div class="stat-label">Uptime</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Recent Activity -->
+            <div class="card">
+                <h3>Recent Activity</h3>
+                <div class="activity-log">
+                    <div class="activity-item">
+                        <span class="activity-time">Just now</span>
+                        <span class="activity-message">System initialized successfully</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-time">2 minutes ago</span>
+                        <span class="activity-message">Database connection established</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-time">5 minutes ago</span>
+                        <span class="activity-message">Cache warmed up</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuration Section -->
+        <section class="configuration">
+            <h2>Configuration</h2>
+            <div class="config-grid">
+                <div class="config-item">
+                    <label for="theme">Theme:</label>
+                    <select id="theme">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                        <option value="auto">Auto</option>
+                    </select>
+                </div>
+                <div class="config-item">
+                    <label for="refreshRate">Refresh Rate:</label>
+                    <select id="refreshRate">
+                        <option value="5000">5 seconds</option>
+                        <option value="10000">10 seconds</option>
+                        <option value="30000">30 seconds</option>
+                    </select>
+                </div>
+                <div class="config-item">
+                    <label for="language">Language:</label>
+                    <select id="language">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Kilo Code Dashboard. Version 1.0.0</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Interactivity -->
+    <script>
+        // Performance monitoring
+        function updateMetrics() {
+            // Simulate real-time data updates
+            document.getElementById('cpuUsage').textContent = Math.floor(Math.random() * 100) + '%';
+            document.getElementById('memoryUsage').textContent = Math.floor(Math.random() * 8000) + 'MB';
+            document.getElementById('responseTime').textContent = Math.floor(Math.random() * 200) + 'ms';
+            document.getElementById('uptime').textContent = Math.floor(Math.random() * 24) + 'h';
+        }
+
+        // Theme switching
+        function switchTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            switchTheme(savedTheme);
+
+            // Set up theme switcher
+            document.getElementById('theme').addEventListener('change', function(e) {
+                switchTheme(e.target.value);
+            });
+
+            // Set up refresh rate
+            let refreshInterval = setInterval(updateMetrics, 5000);
+
+            document.getElementById('refreshRate').addEventListener('change', function(e) {
+                clearInterval(refreshInterval);
+                refreshInterval = setInterval(updateMetrics, parseInt(e.target.value));
+            });
+
+            // Initialize metrics
+            updateMetrics();
+        });
+    </script>
+</body>
+</html>
