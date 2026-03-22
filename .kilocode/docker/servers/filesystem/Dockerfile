@@ -29,14 +29,14 @@ RUN mkdir -p /app/workspace && chown -R mcp:mcp /app
 USER mcp
 
 # Expose health check port
-EXPOSE 3001
+EXPOSE 3101
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3001/health || exit 1
+  CMD curl -f http://localhost:3101/health || exit 1
 
 # Set health port environment variable
-ENV HEALTH_PORT=3001
+ENV HEALTH_PORT=3101
 
 # Set environment variables
 ENV NODE_ENV=production
