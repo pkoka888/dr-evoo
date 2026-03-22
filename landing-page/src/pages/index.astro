@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { Hero } from "../components/ui/hero";
+---
+
+<Layout>
+    <main class="flex min-h-screen flex-col bg-background">
+        <Hero client:load />
+    </main>
+</Layout>
