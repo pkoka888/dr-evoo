@@ -60,7 +60,7 @@ services:
   mcp-git:
     build:
       context: .
-      dockerfile: .kilocode/docker/servers/git/Dockerfile
+      dockerfile: ./servers/git/Dockerfile
     networks:
       - mcp-net
     volumes:
