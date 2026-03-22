@@ -42,7 +42,7 @@ services:
       - ../../mcp-data/filesystem:/app/data
       - ../../mcp-logs/filesystem:/app/logs
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3101/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -68,7 +68,7 @@ services:
       - ../../mcp-data/git:/app/data
       - ../../mcp-logs/git:/app/logs
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3102/health"]
       interval: 30s
       timeout: 10s
       retries: 3

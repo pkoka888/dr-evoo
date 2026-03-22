@@ -17,7 +17,7 @@ import { logger } from "./utils/logger.js";
 async function main() {
   try {
     // Start health check server
-    const healthPort = parseInt(process.env.HEALTH_PORT || '3002');
+    const healthPort = parseInt(process.env.HEALTH_PORT || '3102');
     const healthServer = http.createServer((req, res) => {
       if (req.url === '/health') {
         res.writeHead(200, { 'Content-Type': 'application/json' });

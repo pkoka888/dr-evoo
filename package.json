@@ -7,10 +7,6 @@
   "scripts": {
     "research:migrate": "node scripts/migrate-research-to-study.js",
     "docs:index": "node scripts/generate-index.js",
-    "adr:index": "node scripts/generate-adr-index.js",
-    "devcontainer:gen": "node scripts/devcontainer-gen.js",
-    "docker:prod": "node scripts/generate-prod-compose.js",
-    "docker:orchestrate": "node scripts/orchestrate.js",
     "preinstall": "node scripts/bootstrap.mjs",
     "prepare": "husky",
     "install": "node scripts/bootstrap.mjs",

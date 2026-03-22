@@ -111,10 +111,13 @@ pnpm check-types      # TypeScript type checking
 ## Skills
 
 - **Translation**: `.kilocode/skills/translation/SKILL.md` - Translation and localization guidelines
+- **Astro Development**: `.kilocode/skills/astro-development/SKILL.md` - Astro project best practices
+- **Frontend Design**: `.kilocode/skills/frontend-design/SKILL.md` - UI design and aesthetics
 
 ## Workflows
 
 - **Add Missing Translations**: `.kilocode/workflows/add-missing-translations.md` - Run `/add-missing-translations` to find and fix missing translations
+- **Astro Development**: `.clinerules/workflows/astro-development.md` - Structured workflow for Astro projects
 
 ## Changesets
 
@@ -225,3 +228,36 @@ Keep changes to core extension code minimal to reduce merge conflicts during ups
     - Use Tailwind CSS classes instead of inline style objects for new markup
     - VSCode CSS variables must be added to webview-ui/src/index.css before using them in Tailwind classes
     - Example: `<div className="text-md text-vscode-descriptionForeground mb-2" />` instead of style objects
+
+## Astro Projects
+
+This project includes an Astro-based landing page in the `landing-page/` directory.
+
+### Astro Structure
+
+```
+landing-page/
+├── astro.config.mjs      # Astro configuration
+├── src/
+│   ├── components/       # UI components
+│   ├── layouts/         # Page layouts
+│   ├── pages/           # File-based routing
+│   └── app/             # Styles and globals
+└── public/              # Static assets
+```
+
+### Astro Commands
+
+```bash
+cd landing-page
+npm run dev      # Development server (port 4321)
+npm run build    # Production build
+npm run preview  # Preview build
+```
+
+### Astro Development Notes
+
+- Astro components (`.astro`) are used for static content
+- React components are hydrated with `client:*` directives
+- Use Context7 MCP for Astro documentation lookup
+- Refer to `.kilocode/skills/astro-development/SKILL.md` for best practices

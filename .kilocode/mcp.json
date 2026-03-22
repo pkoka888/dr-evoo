@@ -2,15 +2,24 @@
 	"mcpServers": {
 		"memory": {
 			"command": "npx",
-			"args": ["-y", "@modelcontextprotocol/server-memory"],
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-memory"
+			],
 			"env": {
 				"MAX_TOKENS": "20000"
 			},
-			"alwaysAllow": ["read_graph", "create_entities"]
+			"alwaysAllow": [
+				"read_graph",
+				"create_entities"
+			]
 		},
 		"context7": {
 			"command": "npx",
-			"args": ["-y", "@upstash/context7-mcp"],
+			"args": [
+				"-y",
+				"@upstash/context7-mcp"
+			],
 			"env": {
 				"DEFAULT_MINIMUM_TOKENS": "10000",
 				"MAX_TOKENS": "30000"
@@ -18,17 +27,33 @@
 		},
 		"playwright": {
 			"command": "npx",
-			"args": ["-y", "@playwright/mcp@0.0.38"],
-			"alwaysAllow": ["browser_click", "browser_type", "browser_navigate", "browser_close"]
+			"args": [
+				"-y",
+				"@playwright/mcp@0.0.38"
+			],
+			"alwaysAllow": [
+				"browser_click",
+				"browser_type",
+				"browser_navigate",
+				"browser_close"
+			]
 		},
 		"puppeteer": {
 			"command": "npx",
-			"args": ["-y", "@modelcontextprotocol/server-puppeteer"],
-			"alwaysAllow": ["puppeteer_navigate", "puppeteer_screenshot"]
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-puppeteer"
+			],
+			"alwaysAllow": [
+				"puppeteer_navigate",
+				"puppeteer_screenshot"
+			]
 		},
 		"time": {
 			"command": "uvx",
-			"args": ["mcp-server-time"]
+			"args": [
+				"mcp-server-time"
+			]
 		},
 		"graphiti": {
 			"command": "docker",
@@ -58,13 +83,72 @@
 				"db_backend": "neo4j",
 				"GRAPHITI_GROUP_ID": "default"
 			},
-			"alwaysAllow": ["add_memory", "search_nodes", "search_memory_facts", "get_episodes", "get_status"],
+			"alwaysAllow": [
+				"add_memory",
+				"search_nodes",
+				"search_memory_facts",
+				"get_episodes",
+				"get_status"
+			],
 			"requireDocker": true,
 			"dockerCompose": ".kilocode/docker/servers/graphiti/docker-compose.yml"
 		},
 		"shadcn": {
 			"command": "npx",
-			"args": ["shadcn@latest", "mcp"]
+			"args": [
+				"shadcn@latest",
+				"mcp"
+			]
+		},
+		"git": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-git"
+			],
+			"alwaysAllow": [
+				"get_status",
+				"get_diff",
+				"get_commit_history",
+				"get_branches",
+				"get_current_branch"
+			]
+		},
+		"github": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-github"
+			],
+			"env": {
+				"GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+			},
+			"alwaysAllow": [
+				"get_pull_requests",
+				"list_issues",
+				"search_code"
+			]
+		},
+		"filesystem": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-filesystem",
+				"."
+			],
+			"allowedDirectories": [
+				"."
+			]
+		},
+		"brave-search": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-brave-search"
+			],
+			"env": {
+				"BRAVE_API_KEY": "${BRAVE_SEARCH_API_KEY}"
+			}
 		}
 	}
 }
