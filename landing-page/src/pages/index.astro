@@ -1,10 +1,169 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { Hero } from "../components/ui/hero";
+import { FeaturesList } from "../components/react/FeaturesList";
+import { Testimonials } from "../components/react/Testimonials";
+import { getCollection } from "astro:content";
+
+// Fetch features from content collection
+const allFeatures = await getCollection("features");
+// Get first 3 features for homepage preview
+const featuredFeatures = allFeatures.slice(0, 3);
+
+// Fetch testimonials from content collection
+const testimonials = await getCollection("testimonials");
 ---
 
 <Layout>
     <main class="flex min-h-screen flex-col bg-background">
-        <Hero client:load />
+        <!-- Hero Section -->
+        <section class="pt-20 relative">
+            <!-- LCP Optimized Hero Image -->
+            <img
+                src="/hero-pattern.svg"
+                alt="Kilo Code Hero Background"
+                width="1920"
+                height="1080"
+                fetchpriority="high"
+                class="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none"
+            />
+            <Hero client:load />
+        </section>
+
+        <!-- Features Preview Section -->
+        <section id="features" class="py-24 px-6 border-t border-muted">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2
+                        class="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4"
+                        transition:name="page-title"
+                    >
+                        Built for <span class="text-accent">Performance</span>
+                    </h2>
+                    <p class="text-foreground/60 text-lg max-w-2xl mx-auto">
+                        Everything you need to supercharge your development
+                        workflow.
+                    </p>
+                </div>
+
+                <!-- Use FeaturesList with limited features -->
+                <FeaturesList client:visible features={featuredFeatures} />
+
+                <!-- View All Features CTA -->
+                <div class="text-center mt-12">
+                    <a
+                        href="/features"
+                        data-astro-prefetch="viewport"
+                        class="inline-flex items-center gap-2 text-accent font-bold uppercase tracking-wider hover:gap-4 transition-all"
+                    >
+                        View All Features
+                        <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section
+            id="testimonials"
+            class="py-24 px-6 bg-muted/20 border-t border-muted"
+        >
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2
+                        class="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4"
+                    >
+                        Loved by <span class="text-accent">Developers</span>
+                    </h2>
+                    <p class="text-foreground/60 text-lg max-w-2xl mx-auto">
+                        See what our community has to say about Kilo Code.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Testimonials client:visible testimonials={testimonials} />
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing CTA Section -->
+        <section id="pricing" class="py-24 px-6 border-t border-muted">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2
+                        class="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4"
+                    >
+                        Simple <span class="text-accent">Pricing</span>
+                    </h2>
+                    <p class="text-foreground/60 text-lg max-w-2xl mx-auto">
+                        Start free and scale as you grow. No hidden fees.
+                    </p>
+                </div>
+
+                <div
+                    class="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                >
+                    <a
+                        href="/pricing"
+                        data-astro-prefetch="viewport"
+                        class="inline-flex items-center justify-center h-14 px-8 bg-accent text-foreground text-sm font-bold uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                    >
+                        View Pricing
+                    </a>
+                    <a
+                        href="/pricing"
+                        data-astro-prefetch="viewport"
+                        class="inline-flex items-center justify-center h-14 px-8 border border-foreground/30 text-foreground text-sm font-bold uppercase tracking-widest hover:bg-foreground/10 transition-colors"
+                    >
+                        Get Started Free
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA Section -->
+        <section
+            id="get-started"
+            class="py-24 px-6 bg-accent/10 border-t border-muted"
+        >
+            <div class="max-w-4xl mx-auto text-center">
+                <h2
+                    class="text-4xl md:text-6xl font-black uppercase tracking-tight mb-6"
+                >
+                    Ready to <span class="text-accent">Transform</span> Your Workflow?
+                </h2>
+                <p class="text-foreground/60 text-lg mb-10">
+                    Join thousands of developers who have already revolutionized
+                    their coding experience with Kilo Code.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a
+                        href="/pricing"
+                        data-astro-prefetch="viewport"
+                        class="inline-flex items-center justify-center h-14 px-10 bg-accent text-foreground text-sm font-bold uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                    >
+                        Get Started Now
+                    </a>
+                    <a
+                        href="/features"
+                        data-astro-prefetch="viewport"
+                        class="inline-flex items-center justify-center h-14 px-10 border border-foreground/30 text-foreground text-sm font-bold uppercase tracking-widest hover:bg-foreground/10 transition-colors"
+                    >
+                        Explore Features
+                    </a>
+                </div>
+            </div>
+        </section>
     </main>
 </Layout>

@@ -1,23 +1,65 @@
 ---
-import '../app/globals.css';
+import "../app/globals.css";
+import { ClientRouter } from "astro:transitions";
+import Navigation from "../components/astro/Navigation.astro";
+import Footer from "../components/astro/Footer.astro";
 
 interface Props {
-  title?: string;
+    title?: string;
+    description?: string;
 }
 
-const { title = "Kilo Code" } = Astro.props;
+const {
+    title = "Kilo Code",
+    description = "Open Source AI Coding Agent for VS Code - Generate code from natural language, automate tasks, and support 50+ AI models.",
+} = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en" class="h-full antialiased">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Kilo Code - AI Coding Assistant" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
-  </head>
-  <body class="min-h-full flex flex-col bg-background text-foreground">
-    <slot />
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content={description} />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <title>{title}</title>
+
+        <!-- Preload critical fonts for performance -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            rel="preload"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+            as="style"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Font display swap to prevent FOIT -->
+        <style>
+            @font-face {
+                font-family: "Inter";
+                font-display: swap;
+                font-style: normal;
+                font-weight: 400 900;
+                src: url("https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2")
+                    format("woff2");
+            }
+        </style>
+
+        <!-- View Transitions for SPA-like navigation -->
+        <ClientRouter />
+
+        <!-- Open Graph -->
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="website" />
+    </head>
+    <body class="min-h-full flex flex-col bg-background text-foreground">
+        <Navigation />
+        <slot />
+        <Footer />
+    </body>
 </html>

@@ -191,6 +191,8 @@ export class McpHub {
 	// kilocode_change start - Auto-reconnect on disconnect
 	private reconnectAttempts: Map<string, number> = new Map()
 	private reconnectTimers: Map<string, NodeJS.Timeout> = new Map()
+	// Track servers that are currently reconnecting to prevent duplicate scheduling
+	private reconnectingServers: Set<string> = new Set()
 	private static readonly MAX_RECONNECT_ATTEMPTS = 5
 	private static readonly INITIAL_RECONNECT_DELAY_MS = 1000
 	private static readonly MAX_RECONNECT_DELAY_MS = 30000
@@ -318,7 +320,7 @@ export class McpHub {
 			console.error(`OAuth flow failed for ${serverUrl}:`, error)
 			vscode.window.showErrorMessage(
 				t("mcp:errors.oauth_failed", { serverUrl, error: String(error) }) ||
-					`OAuth authentication failed for ${serverUrl}: ${error}`,
+				`OAuth authentication failed for ${serverUrl}: ${error}`,
 			)
 			return null
 		}
@@ -519,7 +521,8 @@ export class McpHub {
 		const key = `${source}-${serverName}`
 
 		// Don't schedule if already scheduled or if hub is disposed
-		if (this.reconnectTimers.has(key) || this.isDisposed) {
+		// Also check if we're already in the process of reconnecting this server
+		if (this.reconnectTimers.has(key) || this.isDisposed || this.reconnectingServers.has(key)) {
 			return
 		}
 
@@ -531,6 +534,8 @@ export class McpHub {
 				`Max reconnect attempts (${McpHub.MAX_RECONNECT_ATTEMPTS}) reached for "${serverName}", giving up`,
 			)
 			this.reconnectAttempts.delete(key)
+			// Clear the reconnecting state so user can manually retry
+			this.reconnectingServers.delete(key)
 			return
 		}
 
@@ -542,8 +547,13 @@ export class McpHub {
 
 		console.log(`Scheduling reconnect for "${serverName}" in ${delayMs}ms (attempt ${attempts + 1})`)
 
+		// Mark server as reconnecting to prevent duplicate scheduling
+		this.reconnectingServers.add(key)
+
 		const timer = setTimeout(async () => {
 			this.reconnectTimers.delete(key)
+			// Remove from reconnecting set - we'll re-add if reconnection fails
+			this.reconnectingServers.delete(key)
 
 			// Check if server is still disconnected and not disabled
 			const connection = this.findConnection(serverName, source)
@@ -600,6 +610,8 @@ export class McpHub {
 			this.reconnectTimers.delete(key)
 		}
 		this.reconnectAttempts.delete(key)
+		// Also remove from reconnecting set
+		this.reconnectingServers.delete(key)
 	}
 
 	/**
@@ -1356,7 +1368,7 @@ export class McpHub {
 
 			// Only override transport.start for stdio transports that have already been started
 			if (configInjected.type === "stdio") {
-				transport.start = async () => {}
+				transport.start = async () => { }
 			}
 
 			// kilocode_change start - MCP OAuth Authorization: Build auth status for HTTP-based transports
@@ -2589,6 +2601,7 @@ export class McpHub {
 		}
 		this.reconnectTimers.clear()
 		this.reconnectAttempts.clear()
+		this.reconnectingServers.clear()
 		// kilocode_change end
 
 		this.removeAllFileWatchers()
