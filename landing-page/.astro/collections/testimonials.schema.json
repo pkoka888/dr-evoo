@@ -1,0 +1,46 @@
+{
+  "$ref": "#/definitions/testimonials",
+  "definitions": {
+    "testimonials": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Person name",
+          "markdownDescription": "Person name"
+        },
+        "role": {
+          "type": "string",
+          "description": "Job role",
+          "markdownDescription": "Job role"
+        },
+        "company": {
+          "type": "string",
+          "description": "Company name",
+          "markdownDescription": "Company name"
+        },
+        "avatar": {
+          "type": "string",
+          "description": "Avatar image URL",
+          "markdownDescription": "Avatar image URL"
+        },
+        "quote": {
+          "type": "string",
+          "description": "Testimonial quote",
+          "markdownDescription": "Testimonial quote"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "role",
+        "company",
+        "quote"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

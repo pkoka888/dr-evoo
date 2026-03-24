@@ -1,0 +1,41 @@
+{
+  "$ref": "#/definitions/features",
+  "definitions": {
+    "features": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Feature title",
+          "markdownDescription": "Feature title"
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief description of the feature",
+          "markdownDescription": "Brief description of the feature"
+        },
+        "icon": {
+          "type": "string",
+          "description": "Lucide icon name",
+          "markdownDescription": "Lucide icon name"
+        },
+        "order": {
+          "type": "number",
+          "default": 0,
+          "description": "Display order",
+          "markdownDescription": "Display order"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "icon"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

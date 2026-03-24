@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import * as http from 'http';
+import {
+    ListToolsRequestSchema,
+    CallToolRequestSchema,
+} from "@modelcontextprotocol/sdk/types.js";
+import { z } from "zod";
+import * as http from "http";
 
 // Import tools
 import { getCommitHistoryTool } from "./tools/getCommitHistory.js";
@@ -14,67 +19,106 @@ import { switchBranchTool } from "./tools/switchBranch.js";
 // Import utilities
 import { logger } from "./utils/logger.js";
 
+const tools = [
+    getCommitHistoryTool,
+    getBranchesTool,
+    getDiffTool,
+    createBranchTool,
+    switchBranchTool,
+];
+
 async function main() {
-  try {
-    // Start health check server
-    const healthPort = parseInt(process.env.HEALTH_PORT || '3102');
-    const healthServer = http.createServer((req, res) => {
-      if (req.url === '/health') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-          status: 'healthy',
-          timestamp: new Date().toISOString(),
-          service: 'git-mcp-server'
-        }));
-      } else {
-        res.writeHead(404);
-        res.end();
-      }
-    });
+    try {
+        // Start health check server
+        const healthPort = parseInt(process.env["HEALTH_PORT"] || "3102");
+        const healthServer = http.createServer((req, res) => {
+            if (req.url === "/health") {
+                res.writeHead(200, { "Content-Type": "application/json" });
+                res.end(
+                    JSON.stringify({
+                        status: "healthy",
+                        timestamp: new Date().toISOString(),
+                        service: "git-mcp-server",
+                    }),
+                );
+            } else {
+                res.writeHead(404);
+                res.end();
+            }
+        });
 
-    healthServer.listen(healthPort, '0.0.0.0', () => {
-      logger.info(`Health check server listening on port ${healthPort}`);
-    });
+        healthServer.on("error", (err: NodeJS.ErrnoException) => {
+            if (err.code === "EADDRINUSE") {
+                logger.warn(
+                    `Health port ${healthPort} in use, skipping health server`,
+                );
+            } else {
+                logger.error("Health server error", err);
+            }
+        });
 
-    // Initialize MCP server
-    const server = new McpServer({
-      name: "git-server",
-      version: "1.0.0",
-      description: "Secure git repository operations for MCP"
-    });
+        healthServer.listen(healthPort, "0.0.0.0", () => {
+            logger.info(`Health check server listening on port ${healthPort}`);
+        });
 
-    // Register tools
-    server.tool(getCommitHistoryTool.name, getCommitHistoryTool.schema, getCommitHistoryTool.handler);
-    server.tool(getBranchesTool.name, getBranchesTool.schema, getBranchesTool.handler);
-    server.tool(getDiffTool.name, getDiffTool.schema, getDiffTool.handler);
-    server.tool(createBranchTool.name, createBranchTool.schema, createBranchTool.handler);
-    server.tool(switchBranchTool.name, switchBranchTool.schema, switchBranchTool.handler);
+        // Initialize MCP server
+        const server = new Server({
+            name: "git-server",
+            version: "1.0.0",
+        });
 
-    // Set up stdio transport
-    const transport = new StdioServerTransport();
+        // Register tools list handler
+        server.setRequestHandler(ListToolsRequestSchema, async () => {
+            return {
+                tools: tools.map((tool) => ({
+                    name: tool.name,
+                    description: tool.description,
+                    inputSchema: z.object(tool.schema).shape,
+                })),
+            };
+        });
 
-    logger.info("Git MCP server starting...");
-    await server.connect(transport);
-    logger.info("Git MCP server connected and ready");
+        // Register tool call handler
+        server.setRequestHandler(CallToolRequestSchema, async (request) => {
+            const tool = tools.find((t) => t.name === request.params.name);
+            if (!tool) {
+                throw new Error(`Unknown tool: ${request.params.name}`);
+            }
 
-  } catch (error) {
-    logger.error("Failed to start git MCP server", error);
-    process.exit(1);
-  }
+            const toolSchema = z.object(tool.schema);
+            const parsedArgs = toolSchema.parse(request.params.arguments);
+            const result = await (
+                tool.handler as (
+                    args: z.infer<typeof toolSchema>,
+                ) => Promise<{ content: Array<{ type: string; text: string }> }>
+            )(parsedArgs);
+            return result;
+        });
+
+        // Set up stdio transport
+        const transport = new StdioServerTransport();
+
+        logger.info("Git MCP server starting...");
+        await server.connect(transport);
+        logger.info("Git MCP server connected and ready");
+    } catch (error) {
+        logger.error("Failed to start git MCP server", error);
+        process.exit(1);
+    }
 }
 
 // Handle graceful shutdown
-process.on('SIGINT', () => {
-  logger.info("Received SIGINT, shutting down gracefully");
-  process.exit(0);
+process.on("SIGINT", () => {
+    logger.info("Received SIGINT, shutting down gracefully");
+    process.exit(0);
 });
 
-process.on('SIGTERM', () => {
-  logger.info("Received SIGTERM, shutting down gracefully");
-  process.exit(0);
+process.on("SIGTERM", () => {
+    logger.info("Received SIGTERM, shutting down gracefully");
+    process.exit(0);
 });
 
 main().catch((error) => {
-  logger.error("Unhandled error in main", error);
-  process.exit(1);
+    logger.error("Unhandled error in main", error);
+    process.exit(1);
 });

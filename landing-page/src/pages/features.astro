@@ -1,0 +1,96 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { FeaturesList } from "../components/react/FeaturesList";
+import { getCollection } from "astro:content";
+
+/**
+ * Features Page
+ * Displays all features from the content collection with brutalist styling
+ */
+
+// Fetch all features from content collection
+const features = await getCollection("features");
+---
+
+<Layout
+    title="Features | Kilo Code"
+    description="Explore all the powerful features of Kilo Code - AI-powered code generation, automated testing, MCP integrations, and more."
+>
+    <main class="flex min-h-screen flex-col bg-background pt-20">
+        <!-- Page Header -->
+        <section class="py-20 px-6 border-b border-muted">
+            <div class="max-w-7xl mx-auto">
+                <a
+                    href="/"
+                    data-astro-prefetch="viewport"
+                    class="inline-flex items-center gap-2 text-foreground/50 hover:text-accent transition-colors text-sm font-bold uppercase tracking-wider mb-8"
+                >
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Home
+                </a>
+
+                <h1
+                    class="text-5xl md:text-7xl font-black uppercase tracking-tight mb-6"
+                    transition:name="page-title"
+                >
+                    Power <span class="text-accent">Features</span>
+                </h1>
+
+                <p class="text-foreground/60 text-xl max-w-2xl leading-relaxed">
+                    Everything you need to supercharge your development
+                    workflow. From intelligent code completion to automated
+                    testing and seamless integrations.
+                </p>
+            </div>
+        </section>
+
+        <!-- Features Grid -->
+        <section class="py-24 px-6">
+            <div class="max-w-7xl mx-auto">
+                <FeaturesList client:visible features={features} />
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-24 px-6 bg-muted/20 border-t border-muted">
+            <div class="max-w-7xl mx-auto text-center">
+                <h2
+                    class="text-3xl md:text-5xl font-black uppercase tracking-tight mb-6"
+                >
+                    Ready to <span class="text-accent">Transform</span> Your Workflow?
+                </h2>
+                <p class="text-foreground/60 text-lg max-w-2xl mx-auto mb-10">
+                    Join thousands of developers who have already revolutionized
+                    their coding experience.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a
+                        href="/pricing"
+                        data-astro-prefetch="viewport"
+                        class="inline-flex items-center justify-center h-14 px-8 bg-accent text-foreground text-sm font-bold uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                    >
+                        View Pricing
+                    </a>
+                    <a
+                        href="/pricing"
+                        data-astro-prefetch="viewport"
+                        class="inline-flex items-center justify-center h-14 px-8 border border-foreground/30 text-foreground text-sm font-bold uppercase tracking-widest hover:bg-foreground/10 transition-colors"
+                    >
+                        Get Started Free
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+</Layout>

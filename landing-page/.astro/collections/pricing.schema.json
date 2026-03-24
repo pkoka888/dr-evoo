@@ -1,0 +1,61 @@
+{
+  "$ref": "#/definitions/pricing",
+  "definitions": {
+    "pricing": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Plan name",
+          "markdownDescription": "Plan name"
+        },
+        "price": {
+          "type": "string",
+          "description": "Price display (e.g., \"$0\", \"Custom\")",
+          "markdownDescription": "Price display (e.g., \"$0\", \"Custom\")"
+        },
+        "period": {
+          "type": "string",
+          "description": "Billing period (e.g., \"/month\")",
+          "markdownDescription": "Billing period (e.g., \"/month\")"
+        },
+        "description": {
+          "type": "string",
+          "description": "Short plan description",
+          "markdownDescription": "Short plan description"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of features included",
+          "markdownDescription": "List of features included"
+        },
+        "highlighted": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether this is the featured plan",
+          "markdownDescription": "Whether this is the featured plan"
+        },
+        "cta": {
+          "type": "string",
+          "default": "Get Started",
+          "description": "CTA button text",
+          "markdownDescription": "CTA button text"
+        },
+        "$schema": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "price",
+        "description",
+        "features"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

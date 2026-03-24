@@ -1,0 +1,17 @@
+{
+    "name": "Enterprise",
+    "price": "Custom",
+    "description": "For large teams and organizations",
+    "features": [
+        "Everything in Pro",
+        "Custom AI model fine-tuning",
+        "Advanced security & SSO",
+        "Team analytics dashboard",
+        "Dedicated account manager",
+        "SLA guarantee",
+        "24/7 phone support",
+        "On-premise deployment option"
+    ],
+    "highlighted": false,
+    "cta": "Contact Sales"
+}

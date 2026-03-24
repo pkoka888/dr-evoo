@@ -8,4 +8,9 @@ others
 # Embedded/cloned repos for research
 .repos-studies/
 
-".env" 
+# Build artifacts
+.turbo/
+dist/
+
+# Environment files
+".env"

@@ -1,0 +1,15 @@
+{
+    "name": "Free",
+    "price": "$0",
+    "period": "forever",
+    "description": "Perfect for hobbyists and learning",
+    "features": [
+        "Basic code completion",
+        "5 AI providers",
+        "500 AI messages/month",
+        "VS Code extension",
+        "Community support"
+    ],
+    "highlighted": false,
+    "cta": "Get Started"
+}

@@ -1,0 +1,211 @@
+# Dr-Evo Docker Compose Configuration
+# Production-ready setup for dr-evo.cz e-commerce site
+# 
+# Services:
+# - PostgreSQL: Database for Payload CMS
+# - Payload CMS: Backend API and admin panel
+# - imgproxy: Image optimization and resizing
+# - Astro SSR: Frontend web application
+# - Traefik: Reverse proxy with SSL/TLS
+#
+# Usage:
+#   docker-compose up -d
+#   docker-compose logs -f
+#
+# Environment:
+#   Copy .env.example to .env and configure values
+
+services:
+  # ============================================
+  # DATABASE
+  # ============================================
+  db:
+    image: postgres:16-alpine
+    container_name: drevo_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-drevo}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_DB: ${DB_NAME:-drevo_payload}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-drevo}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - drevo_network
+
+  # ============================================
+  # PAYLOAD CMS (Backend API & Admin)
+  # ============================================
+  payload:
+    image: payloadcms/payload:3.0.0-beta.69
+    container_name: drevo_cms
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Database connection
+      DATABASE_URI: postgres://${DB_USER:-drevo}:${DB_PASSWORD:-changeme}@db:5432/${DB_NAME:-drevo_payload}
+      # Payload configuration
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:-change-me-in-production}
+      NODE_ENV: production
+      # Optional: Payload specific settings
+      PAYLOAD_PUBLIC_SERVER_URL: https://api.dr-evo.cz
+      PAYLOAD_PUBLIC_API_URL: https://api.dr-evo.cz/api
+    volumes:
+      - ./media:/home/node/app/media
+      - ./payload.config.ts:/home/node/app/payload.config.ts:ro
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cms.rule=Host(`api.dr-evo.cz`)"
+      - "traefik.http.routers.cms.entrypoints=websecure"
+      - "traefik.http.routers.cms.tls.certresolver=myresolver"
+      - "traefik.http.services.cms.loadbalancer.server.port=3000"
+    networks:
+      - drevo_network
+
+  # ============================================
+  # IMGPROXY (Image Optimization)
+  # ============================================
+  imgproxy:
+    image: darthsim/imgproxy:v3.8
+    container_name: drevo_imgproxy
+    restart: always
+    environment:
+      # imgproxy configuration
+      IMGPROXY_USE_ETAG: "1"
+      IMGPROXY_CACHE_CONTROL: "public, max-age=31536000, immutable"
+      IMGPROXY_LOCAL_FILESYSTEM_ROOT: /mnt/media
+      IMGPROXY_MAX_SRC_SIZE: "52428800" # 50MB
+      IMGPROXY_MAX_RESIZE_SIZE: "16777216" # 16MB
+      # Security
+      IMGPROXY_UNSIGNED_URLS: "false"
+    volumes:
+      - ./media:/mnt/media:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.imgproxy.rule=Host(`img.dr-evo.cz`)"
+      - "traefik.http.routers.imgproxy.entrypoints=websecure"
+      - "traefik.http.routers.imgproxy.tls.certresolver=myresolver"
+      - "traefik.http.services.imgproxy.loadbalancer.server.port=8080"
+    networks:
+      - drevo_network
+
+  # ============================================
+  # ASTRO SSR (Frontend)
+  # ============================================
+  astro:
+    build:
+      context: .
+      dockerfile: Dockerfile.astro
+    container_name: drevo_frontend
+    restart: always
+    depends_on:
+      - payload
+    environment:
+      # API configuration
+      PAYLOAD_API_URL: http://payload:3000/api
+      PUBLIC_PAYLOAD_API_URL: https://api.dr-evo.cz/api
+      # Image optimization
+      IMGPROXY_URL: https://img.dr-evo.cz
+      # Astro SSR
+      Astro_HOST: "0.0.0.0"
+      Astro_PORT: "4321"
+      NODE_ENV: production
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.astro.rule=Host(`dr-evo.cz`) || Host(`www.dr-evo.cz`)"
+      - "traefik.http.routers.astro.entrypoints=websecure"
+      - "traefik.http.routers.astro.tls.certresolver=myresolver"
+      - "traefik.http.routers.astro.middlewares=redirect-www"
+      - "traefik.http.services.astro.loadbalancer.server.port=4321"
+    networks:
+      - drevo_network
+
+  # ============================================
+  # TRAEFIK (Reverse Proxy & SSL)
+  # ============================================
+  traefik:
+    image: traefik:v3.1
+    container_name: drevo_traefik
+    restart: always
+    command:
+      # Global settings
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=drevo_network"
+      # Entry points
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # HTTP to HTTPS redirect
+      - "--entrypoints.web.http.middlewares=redirect.redirectscheme"
+      - "--entrypoints.web.http.middlewares.redirect.redirectscheme.scheme=https"
+      - "--entrypoints.web.http.middlewares.redirect.redirectscheme.permanent=true"
+      # ACME (Let's Encrypt) configuration
+      - "--certificatesresolvers.myresolver.acme.email=${LETSENCRYPT_EMAIL:-admin@dr-evo.cz}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      # Logging
+      - "--log.level=INFO"
+      - "--accesslog=true"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
+    environment:
+      # Traefik CloudFlare DNS challenge (optional)
+      # CF_API_EMAIL: ${CF_EMAIL}
+      # CF_API_KEY: ${CF_API_KEY}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.dr-evo.cz`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+      - "traefik.http.routers.dashboard.service=api@internal"
+    networks:
+      - drevo_network
+
+  # ============================================
+  # REDIS (Optional - for session/caching)
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: drevo_redis
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    labels:
+      - "traefik.enable=false"
+    networks:
+      - drevo_network
+
+# ============================================
+# VOLUMES
+# ============================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# ============================================
+# NETWORKS
+# ============================================
+networks:
+  drevo_network:
+    driver: bridge
+    name: drevo_network

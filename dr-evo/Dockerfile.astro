@@ -1,0 +1,71 @@
+# Dr-Evo Astro SSR Dockerfile
+# Multi-stage build for optimized production image
+#
+# Build: docker build -f Dockerfile.astro -t drevo-astro:latest .
+# Run: docker run -p 4321:4321 drevo-astro:latest
+
+# ============================================
+# BASE - Node.js
+# ============================================
+FROM node:20-alpine AS base
+RUN apk add --no-cache openssl
+WORKDIR /app
+
+# ============================================
+# DEPS - Install dependencies
+# ============================================
+FROM base AS deps
+# Copy package files
+COPY package.json pnpm-lock.yaml* ./
+# Install pnpm if not available
+RUN corepack enable
+# Install dependencies
+RUN if [ -f pnpm-lock.yaml ]; then \
+      pnpm install --frozen-lockfile; \
+    else \
+      pnpm install; \
+    fi
+
+# ============================================
+# BUILDER - Build the application
+# ============================================
+FROM base AS builder
+WORKDIR /app
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+# Copy source code
+COPY . .
+# Build Astro SSR
+RUN pnpm build
+
+# ============================================
+# RUNNER - Production image
+# ============================================
+FROM base AS runner
+WORKDIR /app
+
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 astro
+
+# Copy built assets from builder
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/astro.config.mjs ./
+
+# Set ownership
+RUN chown -R astro:nodejs /app
+
+# Switch to non-root user
+USER astro
+
+# Expose port
+EXPOSE 4321
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:4321/ || exit 1
+
+# Start command
+CMD ["node", "./dist/server/entry.mjs"]

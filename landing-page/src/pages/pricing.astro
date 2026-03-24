@@ -1,0 +1,156 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { PricingCards } from "../components/react/PricingCards";
+import { getCollection } from "astro:content";
+
+/**
+ * Pricing Page
+ * Displays pricing tiers from the content collection with brutalist styling
+ */
+
+// Fetch all pricing tiers from content collection
+const pricingTiers = await getCollection("pricing");
+
+// Sort by price for consistent ordering (Free < Pro < Enterprise)
+const tierOrder = ["free", "pro", "enterprise"];
+const sortedTiers = pricingTiers.sort((a, b) => {
+    return tierOrder.indexOf(a.id) - tierOrder.indexOf(b.id);
+});
+---
+
+<Layout
+    title="Pricing | Kilo Code"
+    description="Choose the perfect plan for your development needs. From free hobbyist to enterprise solutions."
+>
+    <main class="flex min-h-screen flex-col bg-background pt-20">
+        <!-- Page Header -->
+        <section class="py-20 px-6 border-b border-muted">
+            <div class="max-w-7xl mx-auto">
+                <a
+                    href="/"
+                    data-astro-prefetch="viewport"
+                    class="inline-flex items-center gap-2 text-foreground/50 hover:text-accent transition-colors text-sm font-bold uppercase tracking-wider mb-8"
+                >
+                    <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back to Home
+                </a>
+
+                <h1
+                    class="text-5xl md:text-7xl font-black uppercase tracking-tight mb-6"
+                    transition:name="page-title"
+                >
+                    Simple <span class="text-accent">Pricing</span>
+                </h1>
+
+                <p class="text-foreground/60 text-xl max-w-2xl leading-relaxed">
+                    Choose the perfect plan for your development needs. Start
+                    free and scale as you grow.
+                </p>
+            </div>
+        </section>
+
+        <!-- Pricing Cards -->
+        <section class="py-24 px-6">
+            <div class="max-w-7xl mx-auto">
+                <PricingCards client:visible tiers={sortedTiers} />
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="py-24 px-6 bg-muted/20 border-t border-muted">
+            <div class="max-w-3xl mx-auto">
+                <h2
+                    class="text-3xl md:text-4xl font-black uppercase tracking-tight mb-12 text-center"
+                >
+                    Frequently <span class="text-accent">Asked</span> Questions
+                </h2>
+
+                <div class="space-y-6">
+                    <div class="p-6 bg-muted/10 border border-muted">
+                        <h3
+                            class="text-lg font-bold uppercase tracking-wider mb-3"
+                        >
+                            Can I switch plans anytime?
+                        </h3>
+                        <p class="text-foreground/60">
+                            Yes, you can upgrade or downgrade your plan at any
+                            time. Changes take effect immediately and billing is
+                            prorated.
+                        </p>
+                    </div>
+
+                    <div class="p-6 bg-muted/10 border border-muted">
+                        <h3
+                            class="text-lg font-bold uppercase tracking-wider mb-3"
+                        >
+                            Is there a free trial?
+                        </h3>
+                        <p class="text-foreground/60">
+                            Pro plans include a 14-day free trial. No credit
+                            card required. You can explore all features before
+                            committing.
+                        </p>
+                    </div>
+
+                    <div class="p-6 bg-muted/10 border border-muted">
+                        <h3
+                            class="text-lg font-bold uppercase tracking-wider mb-3"
+                        >
+                            What payment methods do you accept?
+                        </h3>
+                        <p class="text-foreground/60">
+                            We accept all major credit cards, PayPal, and wire
+                            transfers for enterprise plans.
+                        </p>
+                    </div>
+
+                    <div class="p-6 bg-muted/10 border border-muted">
+                        <h3
+                            class="text-lg font-bold uppercase tracking-wider mb-3"
+                        >
+                            Can I cancel anytime?
+                        </h3>
+                        <p class="text-foreground/60">
+                            Absolutely. Cancel anytime with no questions asked.
+                            You'll retain access until the end of your billing
+                            period.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom CTA -->
+        <section class="py-24 px-6">
+            <div class="max-w-7xl mx-auto text-center">
+                <h2
+                    class="text-3xl md:text-5xl font-black uppercase tracking-tight mb-6"
+                >
+                    Still Have <span class="text-accent">Questions?</span>
+                </h2>
+                <p class="text-foreground/60 text-lg max-w-2xl mx-auto mb-10">
+                    Our team is here to help you find the perfect solution for
+                    your needs.
+                </p>
+                <a
+                    href="/features"
+                    data-astro-prefetch="viewport"
+                    class="inline-flex items-center justify-center h-14 px-8 border border-foreground/30 text-foreground text-sm font-bold uppercase tracking-widest hover:bg-foreground/10 transition-colors"
+                >
+                    Contact Sales
+                </a>
+            </div>
+        </section>
+    </main>
+</Layout>

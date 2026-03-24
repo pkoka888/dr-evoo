@@ -62,7 +62,7 @@ export const listDirectoryTool = {
         throw error;
       }
 
-      throw new Error(`Failed to list directory: ${error.message}`);
+      throw new Error(`Failed to list directory: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 };

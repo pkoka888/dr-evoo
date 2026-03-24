@@ -87,7 +87,7 @@ export const getCommitHistoryTool = {
         throw error;
       }
 
-      throw new Error(`Failed to get commit history: ${error.message}`);
+      throw new Error(`Failed to get commit history: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 };

@@ -87,7 +87,7 @@ export const searchFilesTool = {
         throw error;
       }
 
-      throw new Error(`Failed to search files: ${error.message}`);
+      throw new Error(`Failed to search files: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 };

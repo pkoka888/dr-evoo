@@ -1,0 +1,66 @@
+version: "1.0"
+subagents:
+  - name: ui-specialist
+    role: frontend
+    description: Builds React components with Framer Motion animations
+    skills:
+      - frontend-design
+      - vercel-react-best-practices
+      - astro-development
+    capabilities:
+      - react-components
+      - animations
+      - responsive-design
+    filePatterns:
+      - "src/components/**/*.tsx"
+      - "src/components/**/*.ts"
+    delegationRules:
+      escalate: ["architecture", "performance"]
+      parallelOk: true
+
+  - name: content-manager
+    role: content
+    description: Manages content collections, MDX, and static data
+    skills:
+      - astro-development
+      - content-research-writer
+    capabilities:
+      - content-collections
+      - mdx
+      - schema-validation
+    filePatterns:
+      - "src/content/**/*"
+      - "src/pages/**/*.mdx"
+    delegationRules:
+      escalate: ["translation"]
+      parallelOk: true
+
+  - name: performance-engineer
+    role: quality
+    description: Optimizes Core Web Vitals and runs tests
+    skills:
+      - performance-profiling
+      - web-design-guidelines
+      - webapp-testing
+    capabilities:
+      - optimization
+      - testing
+      - auditing
+    filePatterns:
+      - "src/__tests__/**/*"
+      - "**/*.spec.*"
+    delegationRules:
+      escalate: ["security"]
+      parallelOk: false
+
+orchestrator:
+  mode: hierarchical
+  maxDepth: 2
+  qualityGates:
+    - lint
+    - typecheck
+    - test
+  escalationPaths:
+    - blocking → user
+    - architecture → architect
+    - security → security-review

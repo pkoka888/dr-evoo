@@ -47,7 +47,7 @@ export const getFileMetadataTool = {
         throw error;
       }
 
-      throw new Error(`Failed to get metadata: ${error.message}`);
+      throw new Error(`Failed to get metadata: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 };

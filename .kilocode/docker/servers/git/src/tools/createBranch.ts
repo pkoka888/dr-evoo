@@ -57,7 +57,7 @@ export const createBranchTool = {
         throw error;
       }
 
-      throw new Error(`Failed to create branch: ${error.message}`);
+      throw new Error(`Failed to create branch: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 };

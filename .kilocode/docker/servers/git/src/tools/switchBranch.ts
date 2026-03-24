@@ -61,7 +61,7 @@ export const switchBranchTool = {
         throw error;
       }
 
-      throw new Error(`Failed to switch branch: ${error.message}`);
+      throw new Error(`Failed to switch branch: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 };

@@ -1,0 +1,17 @@
+{
+    "name": "Pro",
+    "price": "$19",
+    "period": "/month",
+    "description": "For professional developers",
+    "features": [
+        "Advanced code completion",
+        "All 50+ AI providers",
+        "Unlimited AI messages",
+        "Smart refactoring",
+        "Automated testing",
+        "MCP integrations",
+        "Priority support"
+    ],
+    "highlighted": true,
+    "cta": "Start Free Trial"
+}

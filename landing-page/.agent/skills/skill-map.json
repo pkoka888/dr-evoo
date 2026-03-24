@@ -1,0 +1,63 @@
+{
+    "version": "1.0",
+    "subagentSkillMap": {
+        "ui-specialist": {
+            "primary": [
+                "frontend-design",
+                "vercel-react-best-practices"
+            ],
+            "secondary": [
+                "astro-development",
+                "web-design-guidelines"
+            ]
+        },
+        "content-manager": {
+            "primary": [
+                "astro-development",
+                "content-research-writer"
+            ],
+            "secondary": [
+                "translation"
+            ]
+        },
+        "performance-engineer": {
+            "primary": [
+                "performance-profiling",
+                "webapp-testing"
+            ],
+            "secondary": [
+                "web-design-guidelines",
+                "security-analysis"
+            ]
+        }
+    },
+    "autoActivationRules": {
+        "astro-development": {
+            "filePatterns": [
+                "**/*.astro",
+                "astro.config.mjs"
+            ],
+            "alwaysOn": true
+        },
+        "frontend-design": {
+            "filePatterns": [
+                "src/components/**/*.tsx"
+            ],
+            "alwaysOn": false
+        },
+        "webapp-testing": {
+            "filePatterns": [
+                "**/*.spec.*",
+                "playwright.config.*"
+            ],
+            "alwaysOn": false
+        },
+        "performance-profiling": {
+            "filePatterns": [
+                "src/**/*.ts",
+                "src/**/*.tsx"
+            ],
+            "alwaysOn": false
+        }
+    }
+}

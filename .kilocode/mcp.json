@@ -2,19 +2,39 @@
   "mcpServers": {
     "memory": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"],
-      "env": { "MAX_TOKENS": "20000" },
-      "alwaysAllow": ["read_graph", "create_entities"]
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "env": {
+        "MAX_TOKENS": "20000"
+      },
+      "alwaysAllow": [
+        "read_graph",
+        "create_entities"
+      ]
     },
     "context7": {
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"],
-      "env": { "DEFAULT_MINIMUM_TOKENS": "10000", "MAX_TOKENS": "30000" },
-      "alwaysAllow": ["resolve-library-id", "get-library-docs"]
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "env": {
+        "DEFAULT_MINIMUM_TOKENS": "10000",
+        "MAX_TOKENS": "30000"
+      },
+      "alwaysAllow": [
+        "resolve-library-id",
+        "get-library-docs"
+      ]
     },
     "playwright": {
       "command": "npx",
-      "args": ["-y", "@playwright/mcp@0.0.38"],
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.38"
+      ],
       "alwaysAllow": [
         "browser_click",
         "browser_type",
@@ -24,32 +44,65 @@
     },
     "puppeteer": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
-      "alwaysAllow": ["puppeteer_navigate", "puppeteer_screenshot"]
-    },
-    "time": { "command": "uvx", "args": ["mcp-server-time"] },
-    "shadcn": { "command": "npx", "args": ["shadcn@latest", "mcp"] },
-    "git": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-git"],
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-puppeteer"
+      ],
       "alwaysAllow": [
-        "get_status",
-        "get_diff",
+        "puppeteer_navigate",
+        "puppeteer_screenshot"
+      ]
+    },
+    "time": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-time"
+      ]
+    },
+    "shadcn": {
+      "command": "npx",
+      "args": [
+        "shadcn@latest",
+        "mcp"
+      ]
+    },
+    "git": {
+      "command": "node",
+      "args": [
+        ".kilocode/docker/servers/git/dist/index.js"
+      ],
+      "alwaysAllow": [
         "get_commit_history",
         "get_branches",
-        "get_current_branch"
+        "get_diff",
+        "create_branch",
+        "switch_branch"
       ]
     },
     "github": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}" },
-      "alwaysAllow": ["get_pull_requests", "list_issues", "search_code"]
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "alwaysAllow": [
+        "get_pull_requests",
+        "list_issues",
+        "search_code",
+        "search_repositories"
+      ]
     },
     "filesystem": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
-      "allowedDirectories": ["."]
+      "command": "node",
+      "args": [
+        ".kilocode/docker/servers/filesystem/dist/index.js"
+      ],
+      "allowedDirectories": [
+        "."
+      ]
     }
   }
 }
