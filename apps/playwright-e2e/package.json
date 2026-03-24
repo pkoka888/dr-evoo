@@ -16,7 +16,7 @@
 		"@roo-code/config-eslint": "workspace:^",
 		"@roo-code/config-typescript": "workspace:^",
 		"@roo-code/types": "workspace:^",
-		"@types/node": "^20.x",
+		"@types/node": "^25.x",
 		"@vscode/test-electron": "^2.4.0",
 		"dotenv": "^16.4.5",
 		"rimraf": "^6.1.0",
