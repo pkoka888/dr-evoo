@@ -91,7 +91,7 @@ jobs:
               working-directory: cli/dist
               run: npm pack
             - name: Upload Packaged CLI
-              uses: actions/upload-artifact@v6
+              uses: actions/upload-artifact@v7
               with:
                   name: cli-packaged
                   path: cli/dist/*.tgz
